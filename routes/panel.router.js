@@ -20,7 +20,7 @@ router.get("/tytler/:chunk", async (req, res) => {
     } catch (e) {
         var chunk = 1;
     }
-    var {datas, exam_len} = await getExams(req.session.passport.user, chunk, "t");
+    var {datas, exam_len} = await getExams(req.user.username, chunk, "t");
     if (datas === false) {
         res.redirect("/panel");
     }
@@ -42,7 +42,7 @@ router.get("/aytler/:chunk", async (req, res) => {
     } catch (e) {
         var chunk = 1;
     }
-    var {datas, exam_len} = await getExams(req.session.passport.user, chunk, "a");
+    var {datas, exam_len} = await getExams(req.user.username, chunk, "a");
     if (datas === false) {
         res.redirect("/panel");
     }
@@ -64,7 +64,7 @@ router.get("/ydtler/:chunk", async (req, res) => {
     } catch (e) {
         var chunk = 1;
     }
-    var {datas, exam_len} = await getExams(req.session.passport.user, chunk, "y");
+    var {datas, exam_len} = await getExams(req.user.username, chunk, "y");
     res.render("panel/exams", {
         _domain: process.env.DOMAIN,
         _link: "yd",

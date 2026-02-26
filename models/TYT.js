@@ -7,6 +7,7 @@ let TYT_Schema = new Schema({
     },
     username: {
         type: String,
+        index: true,
     },
     public: {
         type: Boolean,
