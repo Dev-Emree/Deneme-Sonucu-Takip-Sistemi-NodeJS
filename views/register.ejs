@@ -16,24 +16,24 @@
 <body>
 	<form action="/login" method="POST">
 		<div class="inputGroup inputGroup1">
-            <label for="email1">Kullanıcı Adı</label>
-            <input maxlength="18" type="text" name="username" id="username" class="username" maxlength="256" autocomplete="off" />
-            <h6 class="error1">Kullanıcı Adı Geçersiz</h6>
+            <label for="username">Kullanıcı Adı</label>
+            <input maxlength="18" type="text" name="username" id="username" class="username" maxlength="256" autocomplete="username" aria-describedby="username-error" />
+            <h6 id="username-error" class="error1" role="alert">Kullanıcı Adı Geçersiz</h6>
         </div>
 		<div class="inputGroup inputGroup2">
-            <label for="email1">E-posta</label>
-            <input type="email" name="email" id="email" class="email" maxlength="256" autocomplete="off" />
-            <h6 class="error2">Email Geçersiz</h6>
+            <label for="email">E-posta</label>
+            <input type="email" name="email" id="email" class="email" maxlength="256" autocomplete="email" aria-describedby="email-error" />
+            <h6 id="email-error" class="error2" role="alert">Email Geçersiz</h6>
         </div>
 		<div class="inputGroup inputGroup3">
             <label for="password">Şifre</label>
-            <input type="password" name="password" id="password" class="password" />
-            <h6 class="error3">Şifre Yanlış</h6>
+            <input type="password" name="password" id="password" class="password" autocomplete="new-password" aria-describedby="password-error" />
+            <h6 id="password-error" class="error3" role="alert">Şifre Yanlış</h6>
         </div>
 		<div class="inputGroup inputGroup4">
-            <label for="password">Şifre Yeniden</label>
-            <input type="password" name="password2" id="password2" class="password2" />
-            <h6 class="error4">Şifreler Uyuşmuyor</h6>
+            <label for="password2">Şifre Yeniden</label>
+            <input type="password" name="password2" id="password2" class="password2" autocomplete="new-password" aria-describedby="password2-error" />
+            <h6 id="password2-error" class="error4" role="alert">Şifreler Uyuşmuyor</h6>
         </div>
 		<div class="inputGroup inputGroup5">
             <button id="login">Kayıt Ol</button>
@@ -65,12 +65,14 @@
 		const error = function(className) {
 			var elem = document.querySelector(`.${className}`);
             elem.className = `${className} errAnimation`;
+            elem.setAttribute('aria-invalid', 'true');
             elem.value = "";
             elem.parentElement.children[2].style.color = 'red'
 		}
         const error2 = function(className) {
             var elem = document.querySelector(`.${className}`);
             elem.className = `${className} errAnimation`;
+            elem.setAttribute('aria-invalid', 'true');
             elem.value = "";
         }
         const ajaxPost = (usr,pass,email) => { $.ajax({
@@ -116,24 +118,28 @@
 			username.addEventListener('click', function() {
 				if (username.classList.contains('errAnimation')) {
 					username.classList.remove('errAnimation');
+                    username.setAttribute('aria-invalid', 'false');
                     document.querySelector('.error1').style="color:transparent;"
 				}
 			});
 			email.addEventListener('click', function() {
 				if (email.classList.contains('errAnimation')) {
 					email.classList.remove('errAnimation');
+                    email.setAttribute('aria-invalid', 'false');
                     document.querySelector('.error2').style="color:transparent;"
 				}
 			});
 			password.addEventListener('click', function() {
 				if (password.classList.contains('errAnimation')) {
 					password.classList.remove('errAnimation');
+                    password.setAttribute('aria-invalid', 'false');
                     document.querySelector('.error3').style="color:transparent;"
 				}
 			});
 			password2.addEventListener('click', function() {
 				if (password2.classList.contains('errAnimation')) {
 					password2.classList.remove('errAnimation');
+                    password2.setAttribute('aria-invalid', 'false');
                     document.querySelector('.error4').style="color:transparent;"
 				}
 			});
