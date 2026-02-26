@@ -1,22 +1,39 @@
 let { TYT } = require("../models/TYT"),
     { AYT } = require("../models/AYT"),
-    { YDT } = require("../models/YDT");
+    { YDT } = require("../models/YDT"),
+    User = require("../models/User");
 
-const setPublic = async function (id, examName) {
+const setPublic = async function (id, examName, userId) {
+    let exam;
     try {
         switch (examName) {
             case "ty":
-                var exam = await TYT.findById(id);
+                exam = await TYT.findById(id);
                 break;
             case "ay":
-                var exam = await AYT.findById(id);
+                exam = await AYT.findById(id);
                 break;
             case "yd":
-                var exam = await YDT.findById(id);
+                exam = await YDT.findById(id);
                 break;
+            default:
+                return "ID not found";
         }
     } catch (e) {
         return "ID not found";
+    }
+
+    if (!exam) return "ID not found";
+
+    if (!userId) return "Unauthorized";
+
+    try {
+        const user = await User.findById(userId);
+        if (!user || exam.username !== user.username) {
+            return "Unauthorized";
+        }
+    } catch (e) {
+        return "Unauthorized";
     }
 
     exam.public = !exam.public;
