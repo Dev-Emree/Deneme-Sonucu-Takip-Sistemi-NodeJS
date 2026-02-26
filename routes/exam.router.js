@@ -66,9 +66,11 @@ router.post('/new-ydt', async (req, res) => {
 });
 
 router.post('/exam-public', async (req, res) => {
-    if (req.session.passport.user === undefined) res.redirect('/giris');
-    var isPublic = await setPublic(req.body.examId,req.body.examName);
+    if (req.session.passport.user === undefined) return res.redirect('/giris');
+    var isPublic = await setPublic(req.body.examId, req.body.examName, req.session.passport.user);
     
+    if (isPublic === 'Unauthorized') return res.sendStatus(403);
+
     if (typeof isPublic == 'boolean') {
         res.send({public:isPublic});
     } else {
