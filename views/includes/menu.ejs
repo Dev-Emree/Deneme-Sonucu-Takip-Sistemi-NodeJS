@@ -15,7 +15,7 @@
 </div>
 <div class="mobile">
     <nav>
-        <div class="menu-btn">
+        <div class="menu-btn" role="button" tabindex="0" aria-label="Menüyü aç/kapat">
             <div class="line line--1"></div>
             <div class="line line--2"></div>
             <div class="line line--3"></div>
@@ -51,4 +51,14 @@
         link.classList.toggle('fade-in');
     });
 
+    menuBtn.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            nav.classList.toggle('nav-open');
+            lineOne.classList.toggle('line-cross');
+            lineTwo.classList.toggle('line-fade-out');
+            lineThree.classList.toggle('line-cross');
+            link.classList.toggle('fade-in');
+        }
+    });
 </script>
