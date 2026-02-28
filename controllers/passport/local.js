@@ -23,6 +23,6 @@ module.exports = function (passport) {
     });
 
     passport.deserializeUser((_id, done) =>
-        User.findById(_id, (err, user) =>
+        User.findById(_id, '-tyts -ayts -ydts', (err, user) =>
             done(err, user)));
 }
