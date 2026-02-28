@@ -4,8 +4,8 @@ let router = require('express').Router(),
 
 //TYT
 router.post('/new-tyt', async (req, res) => {
-    if (req.session.passport.user === undefined) return res.send({ saved: false });
-    if(req.body.examName.length > 16) return res.send({ saved: false });
+    if (!req.session || !req.session.passport || req.session.passport.user === undefined) return res.send({ saved: false });
+    if (typeof req.body.examName !== 'string' || req.body.examName.length > 16) return res.send({ saved: false });
     var ok = await processExam(
         {
             Turkce: req.body.tr,
@@ -27,8 +27,8 @@ router.post('/new-tyt', async (req, res) => {
 
 //AYT
 router.post('/new-ayt', async (req, res) => {
-    if (req.session.passport.user === undefined) return res.send({ saved: false });
-    if(req.body.examName.length > 16) return res.send({ saved: false });
+    if (!req.session || !req.session.passport || req.session.passport.user === undefined) return res.send({ saved: false });
+    if (typeof req.body.examName !== 'string' || req.body.examName.length > 16) return res.send({ saved: false });
     var ok = await processExam(
         {
             Turkce: req.body.tr,
@@ -52,8 +52,8 @@ router.post('/new-ayt', async (req, res) => {
 
 //YDT
 router.post('/new-ydt', async (req, res) => {
-    if (req.session.passport.user === undefined) return res.send({ saved: false });
-    if(req.body.examName.length > 16) return res.send({ saved: false });
+    if (!req.session || !req.session.passport || req.session.passport.user === undefined) return res.send({ saved: false });
+    if (typeof req.body.examName !== 'string' || req.body.examName.length > 16) return res.send({ saved: false });
     var ok = await processYDT(
         req.body,
         req.session.passport.user
@@ -66,7 +66,8 @@ router.post('/new-ydt', async (req, res) => {
 });
 
 router.post('/exam-public', async (req, res) => {
-    if (req.session.passport.user === undefined) return res.redirect('/giris');
+    if (!req.session || !req.session.passport || req.session.passport.user === undefined) return res.redirect('/giris');
+    if (typeof req.body.examId !== 'string' || typeof req.body.examName !== 'string') return res.sendStatus(400);
     var isPublic = await setPublic(req.body.examId, req.body.examName, req.session.passport.user);
     
     if (isPublic === 'Unauthorized') return res.sendStatus(403);

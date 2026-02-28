@@ -1,7 +1,4 @@
-## 2023-10-27 - Critical IDOR in Exam Visibility Toggle
-
-**Vulnerability:** Insecure Direct Object Reference (IDOR) in `setPublic` controller function allowed any authenticated user to toggle the visibility of any exam by knowing its ID. The function lacked a check to verify that the requesting user owned the exam.
-
-**Learning:** The application trusted the `examId` provided in the request body without cross-referencing it with the authenticated user's session. This pattern of "fetch object -> modify object" without "check ownership" is a common source of IDOR.
-
-**Prevention:** Always verify ownership before modifying resources. In this case, by fetching the exam and comparing `exam.username` with the session user's `username` (or `_id`). Additionally, fail securely (e.g., return 403 Forbidden) rather than just 500 or generic error.
+## 2024-05-18 - [Denial of Service via Unvalidated Input in Express Routes]
+**Vulnerability:** Express route handlers (`/new-tyt`, `/new-ayt`, `/new-ydt`, `/exam-public`) were accessing `.length` on `req.body.examName` without verifying that `req.body.examName` was present or a string. Similarly, they accessed `req.session.passport.user` without ensuring `req.session.passport` was populated. This meant an attacker sending an empty or malformed JSON payload could throw unhandled TypeErrors, crashing the node process.
+**Learning:** In standard Express setups, missing body properties or session data result in `undefined`, not empty strings/objects. Because Node crashes on unhandled exceptions in asynchronous routes unless handled by an error-catching middleware, all input paths accessing nested object properties must have rigorous type and existence checks.
+**Prevention:** Always validate `typeof req.body.property === 'string'` before calling string methods or checking length. Ensure `req.session` and `req.session.passport` exist before accessing user IDs. Use defensive checks (e.g. `!req.session || !req.session.passport || req.session.passport.user === undefined`).
