@@ -12,6 +12,8 @@ router.get('/giris', loginHandler.checkLoggedOut, (req, res) => {
 
 router.post('/login', (req, res, next) => {
     
+    if (typeof req.body.username !== 'string' || typeof req.body.password !== 'string') return res.send({ usr: 0, pass: 0 });
+
     passport.authenticate('local', (error, user) => {
         if (error && !app.locals.isProduction) return res.status(500).json(error);
         
@@ -34,6 +36,8 @@ router.get('/kayit-ol', loginHandler.checkLoggedOut, (req, res) => {
 
 router.post('/register', async (req, res) => {
     if (typeof req.body.usr != 'string') return res.send({ usr: 0, pass: 1, email: 1 });
+    if (typeof req.body.email != 'string') return res.send({ usr: 1, pass: 1, email: 0 });
+    if (typeof req.body.pass != 'string') return res.send({ usr: 1, pass: 0, email: 1 });
     
     if (req.body.usr.length > 18) return res.send({ usr: 0, pass: 1, email: 1 });
     
