@@ -127,7 +127,7 @@
         </ul>
         <div class="pages">
             <% if(chunk!=1){ %>
-                <a href="<%=parseInt(chunk)-1%>" class="previous">
+                <a href="<%=parseInt(chunk)-1%>" class="previous" aria-label="Önceki Sayfa" title="Önceki Sayfa">
                     <img class="page-arrow" src="http://cdn.onlinewebfonts.com/svg/img_270824.svg" aria-hidden="true"
                         style="transform:rotate(180deg);">
                 </a>
@@ -136,7 +136,7 @@
                 </div>
             <% } %>
             <% if (next) { %>
-                <a href="<%=parseInt(chunk)+1%>" class="next">
+                <a href="<%=parseInt(chunk)+1%>" class="next" aria-label="Sonraki Sayfa" title="Sonraki Sayfa">
                     <img class="page-arrow" src="http://cdn.onlinewebfonts.com/svg/img_270824.svg" aria-hidden="true">
                 </a>
             <% } %>
@@ -145,7 +145,7 @@
             <div class="info-content">
                 <h5>Sınavlara tıklayarak detaylı bilgi görebilirsiniz.</h5>
             </div>
-            <div class="info-btn">
+            <div class="info-btn" role="button" tabindex="0" aria-label="Bilgi göster/gizle">
                 <h1>?</h1>
             </div>
         </div>
@@ -158,6 +158,18 @@
                     content.classList.remove('info-inner')
                 } else {
                     content.classList.toggle('info-inner');
+                }
+            });
+
+            document.querySelector('.info-btn').addEventListener("keydown", (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    var content = document.querySelector('.info-content>h5');
+                    if (content.classList.contains('info-inner')) {
+                        content.classList.remove('info-inner')
+                    } else {
+                        content.classList.toggle('info-inner');
+                    }
                 }
             });
         });

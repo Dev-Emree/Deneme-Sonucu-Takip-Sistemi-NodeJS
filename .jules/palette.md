@@ -1,0 +1,3 @@
+## 2024-05-24 - Interactive Elements Accessibility Pattern
+**Learning:** The app frequently uses non-semantic HTML tags like `<div>` and `<span>` for interactive elements (e.g., toggle buttons, pagination links) which negatively impacts keyboard accessibility and screen reader support.
+**Action:** Always verify if non-semantic elements are interactive. If so, apply `role="button"`, `tabindex="0"`, descriptive `aria-label`s, and ensure `keydown` event listeners for `Enter` and `Space` are attached alongside existing `click` listeners. For anchor tags with missing labels, add `aria-label` and `title` tags.
