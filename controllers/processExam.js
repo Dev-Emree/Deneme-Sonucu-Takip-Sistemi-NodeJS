@@ -32,7 +32,8 @@ const saveExam = async function (data, user_id, exam_name) {
 
     var exam_id = await exam._id;
 
-    var user = await User.findOne({ _id: user_id });
+    // ⚡ Bolt: Use .lean() and projection to prevent loading large arrays (tyts, ayts, ydts) into memory
+    var user = await User.findById(user_id, 'username').lean();
 
     if (user === null) return false;
 
@@ -45,20 +46,24 @@ const saveExam = async function (data, user_id, exam_name) {
         return false;
     }
 
+    var arrayName = "";
     switch (exam_name) {
         case "TYT":
-            user.tyts.push(exam_id);
+            arrayName = "tyts";
             break;
         case "AYT":
-            user.ayts.push(exam_id);
+            arrayName = "ayts";
             break;
     }
 
-    try {
-        await user.save();
-    } catch (e) {
-        console.log(e);
-        return false;
+    if (arrayName !== "") {
+        try {
+            // ⚡ Bolt: Use atomic $push update instead of full document .save() to prevent memory bloat
+            await User.updateOne({ _id: user_id }, { $push: { [arrayName]: exam_id } });
+        } catch (e) {
+            console.log(e);
+            return false;
+        }
     }
 
     return true;
@@ -78,7 +83,10 @@ const saveYDT = async function (data, user_id) {
 
     var exam_id = await exam._id;
 
-    var user = await User.findOne({ _id: user_id });
+    // ⚡ Bolt: Use .lean() and projection to prevent loading large arrays (tyts, ayts, ydts) into memory
+    var user = await User.findById(user_id, 'username').lean();
+
+    if (user === null) return false;
 
     exam.username = user.username;
 
@@ -89,10 +97,9 @@ const saveYDT = async function (data, user_id) {
         return false;
     }
 
-    user.ydts.push(exam_id);
-
     try {
-        await user.save();
+        // ⚡ Bolt: Use atomic $push update instead of full document .save() to prevent memory bloat
+        await User.updateOne({ _id: user_id }, { $push: { ydts: exam_id } });
     } catch (e) {
         console.log(e);
         return false;
