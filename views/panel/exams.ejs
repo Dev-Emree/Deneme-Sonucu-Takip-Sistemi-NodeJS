@@ -142,22 +142,32 @@
             <% } %>
         </div>
         <div class="info">
-            <div class="info-content">
+            <div class="info-content" id="info-content-text">
                 <h5>Sınavlara tıklayarak detaylı bilgi görebilirsiniz.</h5>
             </div>
-            <div class="info-btn">
-                <h1>?</h1>
+            <div class="info-btn" role="button" tabindex="0" aria-label="Bilgi göster veya gizle" aria-expanded="false" aria-controls="info-content-text">
+                <h1 aria-hidden="true">?</h1>
             </div>
         </div>
     </main>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", () => {
-            document.querySelector('.info-btn').addEventListener("click", () => {
+            var infoBtn = document.querySelector('.info-btn');
+            var toggleInfo = () => {
                 var content = document.querySelector('.info-content>h5');
+                var isExpanded = infoBtn.getAttribute('aria-expanded') === 'true';
+                infoBtn.setAttribute('aria-expanded', !isExpanded);
                 if (content.classList.contains('info-inner')) {
                     content.classList.remove('info-inner')
                 } else {
                     content.classList.toggle('info-inner');
+                }
+            };
+            infoBtn.addEventListener("click", toggleInfo);
+            infoBtn.addEventListener("keydown", (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleInfo();
                 }
             });
         });

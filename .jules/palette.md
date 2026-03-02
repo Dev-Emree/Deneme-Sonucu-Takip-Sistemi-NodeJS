@@ -1,0 +1,3 @@
+## 2024-05-16 - Non-semantic tag keyboard accessibility
+**Learning:** This application heavily relies on non-semantic tags (`<div>`, `<span>`) for interactive elements (like the `.info-btn` tooltip/modal triggers) instead of native `<button>` tags. This pattern completely breaks keyboard navigation and screen reader support unless specifically augmented.
+**Action:** When adding interactivity to these tags, always include `role="button"`, `tabindex="0"`, corresponding `aria-*` state properties, and an event listener for `keydown` (checking for `Enter` or `Space` keys) to match the native button behavior, rather than rewriting the DOM structure and risk breaking existing styling.
