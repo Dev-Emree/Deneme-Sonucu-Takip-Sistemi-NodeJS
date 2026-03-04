@@ -20,7 +20,7 @@
             <% }else{ %>
             <% exams.forEach((item,index)=>{ %>
             <li class="exam">
-                <div class="exam-p1">
+                <div class="exam-p1" role="button" tabindex="0" aria-expanded="false" aria-label="Sınav detaylarını göster/gizle">
                     <h2 class="exam-name"><%= item.examName %></h2>
                     <img class="arrow" src="http://cdn.onlinewebfonts.com/svg/img_295694.svg" aria-hidden="true">
                 </div>
@@ -166,9 +166,13 @@
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"
         integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     <script>
-        $("li .exam-p1").click(function () {
-            $(this).find(".arrow").toggleClass("arrow-active"),
+        $("li .exam-p1").on("click keydown", function (e) {
+            if (e.type === "click" || e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                $(this).find(".arrow").toggleClass("arrow-active");
                 $(this).parent().toggleClass("active");
+                $(this).attr("aria-expanded", $(this).parent().hasClass("active") ? "true" : "false");
+            }
         });
 
     </script>
