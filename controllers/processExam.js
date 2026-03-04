@@ -32,7 +32,8 @@ const saveExam = async function (data, user_id, exam_name) {
 
     var exam_id = await exam._id;
 
-    var user = await User.findOne({ _id: user_id });
+    // ⚡ Bolt: Fetch only the required username field instead of the full document
+    var user = await User.findById(user_id, 'username').lean();
 
     if (user === null) return false;
 
@@ -45,20 +46,24 @@ const saveExam = async function (data, user_id, exam_name) {
         return false;
     }
 
+    let updateQuery;
     switch (exam_name) {
         case "TYT":
-            user.tyts.push(exam_id);
+            updateQuery = { $push: { tyts: exam_id } };
             break;
         case "AYT":
-            user.ayts.push(exam_id);
+            updateQuery = { $push: { ayts: exam_id } };
             break;
     }
 
-    try {
-        await user.save();
-    } catch (e) {
-        console.log(e);
-        return false;
+    if (updateQuery) {
+        try {
+            // ⚡ Bolt: Use atomic $push update instead of re-saving the entire user document
+            await User.updateOne({ _id: user_id }, updateQuery);
+        } catch (e) {
+            console.log(e);
+            return false;
+        }
     }
 
     return true;
@@ -78,7 +83,8 @@ const saveYDT = async function (data, user_id) {
 
     var exam_id = await exam._id;
 
-    var user = await User.findOne({ _id: user_id });
+    // ⚡ Bolt: Fetch only the required username field instead of the full document
+    var user = await User.findById(user_id, 'username').lean();
 
     exam.username = user.username;
 
@@ -89,10 +95,9 @@ const saveYDT = async function (data, user_id) {
         return false;
     }
 
-    user.ydts.push(exam_id);
-
     try {
-        await user.save();
+        // ⚡ Bolt: Use atomic $push update instead of re-saving the entire user document
+        await User.updateOne({ _id: user_id }, { $push: { ydts: exam_id } });
     } catch (e) {
         console.log(e);
         return false;
