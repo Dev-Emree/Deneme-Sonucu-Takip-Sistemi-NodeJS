@@ -20,7 +20,7 @@
             <% }else{ %>
             <% exams.forEach((item,index)=>{ %>
             <li class="exam">
-                <div class="exam-p1">
+                <div class="exam-p1" role="button" tabindex="0" aria-expanded="false" aria-label="<%= item.examName %> Sınav Detayları">
                     <h2 class="exam-name"><%= item.examName %></h2>
                     <img class="arrow" src="http://cdn.onlinewebfonts.com/svg/img_295694.svg" aria-hidden="true">
                 </div>
@@ -110,14 +110,14 @@
                     <div class="change-visibility">
                         <% var link = `http://${_domain}/detay/${_link}t/${item._id}` %>
                         <h4 onclick="navigator.clipboard.writeText('<%=link%>');window.open('<%=link%>','_blank')"
-                            class="url">
+                            class="url" role="button" tabindex="0" aria-label="Sınav Linki">
                         <% if(item.public){ %>
                         Tıklayarak URL'i kopyala<i style="margin-left:5px;"
                                 class="fa-solid fa-arrow-up-right-from-square"></i></h4>
-                        <span id="button<%=index%>" class="change"><b>Gizli Yap</b></span>
+                        <span id="button<%=index%>" class="change" role="button" tabindex="0" aria-label="Görünürlüğü Değiştir (Şu an: Görünür)"><b>Gizli Yap</b></span>
                         <% }else{ %>
                         URL yok</h4>
-                        <span id="button<%=index%>" class="change"><b>Görünür Yap</b></span>
+                        <span id="button<%=index%>" class="change" role="button" tabindex="0" aria-label="Görünürlüğü Değiştir (Şu an: Gizli)"><b>Görünür Yap</b></span>
                         <% } %>
                     </div>
                 </div>
@@ -142,22 +142,35 @@
             <% } %>
         </div>
         <div class="info">
-            <div class="info-content">
+            <div class="info-content" aria-hidden="true" id="info-tooltip">
                 <h5>Sınavlara tıklayarak detaylı bilgi görebilirsiniz.</h5>
             </div>
-            <div class="info-btn">
+            <div class="info-btn" role="button" tabindex="0" aria-label="Bilgi Al" aria-expanded="false" aria-controls="info-tooltip">
                 <h1>?</h1>
             </div>
         </div>
     </main>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", () => {
-            document.querySelector('.info-btn').addEventListener("click", () => {
+            const infoBtn = document.querySelector('.info-btn');
+            const toggleInfo = () => {
                 var content = document.querySelector('.info-content>h5');
+                var wrapper = document.querySelector('.info-content');
                 if (content.classList.contains('info-inner')) {
-                    content.classList.remove('info-inner')
+                    content.classList.remove('info-inner');
+                    infoBtn.setAttribute('aria-expanded', 'false');
+                    wrapper.setAttribute('aria-hidden', 'true');
                 } else {
                     content.classList.toggle('info-inner');
+                    infoBtn.setAttribute('aria-expanded', 'true');
+                    wrapper.setAttribute('aria-hidden', 'false');
+                }
+            };
+            infoBtn.addEventListener("click", toggleInfo);
+            infoBtn.addEventListener("keydown", (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleInfo();
                 }
             });
         });
@@ -166,9 +179,19 @@
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"
         integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     <script>
-        $("li .exam-p1").click(function () {
-            $(this).find(".arrow").toggleClass("arrow-active"),
-                $(this).parent().toggleClass("active");
+        const toggleExam = function() {
+            var $this = $(this);
+            $this.find(".arrow").toggleClass("arrow-active");
+            $this.parent().toggleClass("active");
+            var isExpanded = $this.parent().hasClass("active");
+            $this.attr("aria-expanded", isExpanded);
+        };
+        $("li .exam-p1").click(toggleExam);
+        $("li .exam-p1").keydown(function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleExam.call(this);
+            }
         });
 
     </script>
@@ -180,7 +203,7 @@
         var ids = '<%-ids.slice(0,-1)%>'.split(','),
             buttons = document.querySelectorAll('.change');
         buttons.forEach((item, index) => {
-            item.addEventListener('click', event => {
+            const togglePublic = () => {
                 var id = item.id,
                     id_last = id.slice(-1);
                 id_last < 10 && id_last > -1 ? 0 : location.reload();
@@ -195,11 +218,13 @@
                     success: function (data) {
                         if (data.public) {
                             item.parentElement.children[0].innerHTML =
-                                "Tıklayrak URL'i kopyala<i style='margin-left:5px;' class='fa-solid fa-arrow-up-right-from-square'></i>";
+                                "Tıklayarak URL'i kopyala<i style='margin-left:5px;' class='fa-solid fa-arrow-up-right-from-square'></i>";
                             item.firstChild.innerHTML = 'Gizli Yap';
+                            item.setAttribute('aria-label', 'Görünürlüğü Değiştir (Şu an: Görünür)');
                         } else {
                             item.parentElement.children[0].innerHTML = 'URL yok';
                             item.firstChild.innerHTML = 'Görünür Yap';
+                            item.setAttribute('aria-label', 'Görünürlüğü Değiştir (Şu an: Gizli)');
                         }
                     },
                     error: function (data) {
@@ -207,7 +232,24 @@
                         location.reload();
                     }
                 });
+            };
+            item.addEventListener('click', togglePublic);
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    togglePublic();
+                }
             });
+
+            const urlH4 = item.parentElement.querySelector('.url');
+            if(urlH4) {
+                urlH4.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        urlH4.click();
+                    }
+                });
+            }
         });
 
     </script>
