@@ -32,7 +32,8 @@ const saveExam = async function (data, user_id, exam_name) {
 
     var exam_id = await exam._id;
 
-    var user = await User.findOne({ _id: user_id });
+    // Bolt: Use lean() and projection to avoid loading the full document and massive arrays
+    var user = await User.findById(user_id, 'username').lean();
 
     if (user === null) return false;
 
@@ -45,17 +46,21 @@ const saveExam = async function (data, user_id, exam_name) {
         return false;
     }
 
+    let array_field = '';
     switch (exam_name) {
         case "TYT":
-            user.tyts.push(exam_id);
+            array_field = 'tyts';
             break;
         case "AYT":
-            user.ayts.push(exam_id);
+            array_field = 'ayts';
             break;
     }
 
+    if (!array_field) return false;
+
+    // Bolt: Directly push to the array using updateOne to prevent heavy array processing
     try {
-        await user.save();
+        await User.updateOne({ _id: user_id }, { $push: { [array_field]: exam_id } });
     } catch (e) {
         console.log(e);
         return false;
@@ -78,7 +83,10 @@ const saveYDT = async function (data, user_id) {
 
     var exam_id = await exam._id;
 
-    var user = await User.findOne({ _id: user_id });
+    // Bolt: Use lean() and projection to avoid loading the full document and massive arrays
+    var user = await User.findById(user_id, 'username').lean();
+
+    if (user === null) return false;
 
     exam.username = user.username;
 
@@ -89,10 +97,11 @@ const saveYDT = async function (data, user_id) {
         return false;
     }
 
-    user.ydts.push(exam_id);
+    let array_field = 'ydts';
 
+    // Bolt: Directly push to the array using updateOne to prevent heavy array processing
     try {
-        await user.save();
+        await User.updateOne({ _id: user_id }, { $push: { [array_field]: exam_id } });
     } catch (e) {
         console.log(e);
         return false;
