@@ -1,7 +1,4 @@
-## 2023-10-27 - Critical IDOR in Exam Visibility Toggle
-
-**Vulnerability:** Insecure Direct Object Reference (IDOR) in `setPublic` controller function allowed any authenticated user to toggle the visibility of any exam by knowing its ID. The function lacked a check to verify that the requesting user owned the exam.
-
-**Learning:** The application trusted the `examId` provided in the request body without cross-referencing it with the authenticated user's session. This pattern of "fetch object -> modify object" without "check ownership" is a common source of IDOR.
-
-**Prevention:** Always verify ownership before modifying resources. In this case, by fetching the exam and comparing `exam.username` with the session user's `username` (or `_id`). Additionally, fail securely (e.g., return 403 Forbidden) rather than just 500 or generic error.
+## 2025-03-07 - [Denial of Service via Unhandled Property Access]
+**Vulnerability:** The application was vulnerable to Denial of Service (DoS) due to unhandled `TypeError` exceptions. Express route handlers directly accessed nested properties like `req.body.examName.length` and `req.session.passport.user` without validating the existence or type of these objects first.
+**Learning:** In Node.js/Express, unhandled exceptions in synchronous or asynchronous route handler code (where not wrapped in a `try...catch` block or properly handled by Express error handling) will crash the entire Node process, leading to a denial of service for all users.
+**Prevention:** Always validate that `req.body` and `req.session` properties exist and are of the expected type (e.g., `typeof req.body?.examName === 'string'`) before accessing properties like `.length` or using them in database queries. Use optional chaining (`?.`) for deeply nested, potentially undefined properties like `req.session?.passport?.user`.
