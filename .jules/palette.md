@@ -1,0 +1,3 @@
+## 2024-05-24 - Interactive Elements Accessibility Pattern
+**Learning:** The app frequently uses non-semantic HTML tags (like `<h4>` and `<span>`) for critical interactive elements like copy-to-clipboard buttons and toggle actions, lacking standard accessibility affordances.
+**Action:** When working on UI/UX improvements, always check non-semantic interactive tags. Ensure they receive `role="button"`, `tabindex="0"`, `aria-label`, and `keydown` event listeners for `Enter` and `Space` to provide full keyboard and screen reader accessibility without altering the existing custom CSS styling or layout structure.

@@ -110,14 +110,15 @@
                     <div class="change-visibility">
                         <% var link = `http://${_domain}/detay/${_link}t/${item._id}` %>
                         <h4 onclick="navigator.clipboard.writeText('<%=link%>');window.open('<%=link%>','_blank')"
-                            class="url">
+                            onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); navigator.clipboard.writeText('<%=link%>');window.open('<%=link%>','_blank'); }"
+                            class="url" role="button" tabindex="0" aria-label="Sınav URL'sini kopyala ve aç">
                         <% if(item.public){ %>
                         Tıklayarak URL'i kopyala<i style="margin-left:5px;"
                                 class="fa-solid fa-arrow-up-right-from-square"></i></h4>
-                        <span id="button<%=index%>" class="change"><b>Gizli Yap</b></span>
+                        <span id="button<%=index%>" class="change" role="button" tabindex="0" aria-label="Sınavı gizli yap"><b>Gizli Yap</b></span>
                         <% }else{ %>
                         URL yok</h4>
-                        <span id="button<%=index%>" class="change"><b>Görünür Yap</b></span>
+                        <span id="button<%=index%>" class="change" role="button" tabindex="0" aria-label="Sınavı görünür yap"><b>Görünür Yap</b></span>
                         <% } %>
                     </div>
                 </div>
@@ -180,7 +181,7 @@
         var ids = '<%-ids.slice(0,-1)%>'.split(','),
             buttons = document.querySelectorAll('.change');
         buttons.forEach((item, index) => {
-            item.addEventListener('click', event => {
+            const toggleVisibility = () => {
                 var id = item.id,
                     id_last = id.slice(-1);
                 id_last < 10 && id_last > -1 ? 0 : location.reload();
@@ -197,9 +198,11 @@
                             item.parentElement.children[0].innerHTML =
                                 "Tıklayrak URL'i kopyala<i style='margin-left:5px;' class='fa-solid fa-arrow-up-right-from-square'></i>";
                             item.firstChild.innerHTML = 'Gizli Yap';
+                            item.setAttribute('aria-label', 'Sınavı gizli yap');
                         } else {
                             item.parentElement.children[0].innerHTML = 'URL yok';
                             item.firstChild.innerHTML = 'Görünür Yap';
+                            item.setAttribute('aria-label', 'Sınavı görünür yap');
                         }
                     },
                     error: function (data) {
@@ -207,6 +210,13 @@
                         location.reload();
                     }
                 });
+            };
+            item.addEventListener('click', toggleVisibility);
+            item.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    toggleVisibility();
+                }
             });
         });
 
