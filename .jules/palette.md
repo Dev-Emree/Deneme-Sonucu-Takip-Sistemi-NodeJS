@@ -1,0 +1,3 @@
+## 2024-05-24 - Interactive Elements using Non-Semantic Tags
+**Learning:** The application frequently uses non-semantic HTML tags like `<div>` and `<span>` for interactive elements such as accordions. This requires explicitly adding `role="button"`, `tabindex="0"`, `aria-expanded`/`aria-controls` attributes, and `keydown` event handlers for `Enter` and `Space` to ensure keyboard and screen reader accessibility. Calling `e.preventDefault()` on the `Space` key event is crucial to prevent unwanted page scrolling.
+**Action:** When working on interactive elements, always verify their semantic meaning. If a non-semantic tag is used, immediately implement the necessary ARIA attributes and keyboard event listeners, ensuring both `Enter` and `Space` are supported for activation.
