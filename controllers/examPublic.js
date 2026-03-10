@@ -50,7 +50,7 @@ const publicExam = async function (examName, id) {
         switch (examName) {
             case "tyt":
                 var exam = await TYT.findById(id);
-                if (!exam.public) return false;
+                if (!exam || !exam.public) return false;
                 return {
                     examName: exam.examName,
                     username: exam.username,
@@ -62,6 +62,7 @@ const publicExam = async function (examName, id) {
                 };
             case "ayt":
                 var exam = await AYT.findById(id);
+                if (!exam || !exam.public) return false;
                 return {
                     examName: exam.examName,
                     username: exam.username,
@@ -75,6 +76,7 @@ const publicExam = async function (examName, id) {
                 };
             case "ydt":
                 var exam = await YDT.findById(id);
+                if (!exam || !exam.public) return false;
                 return {
                     examName: exam.examName,
                     username: exam.username,
