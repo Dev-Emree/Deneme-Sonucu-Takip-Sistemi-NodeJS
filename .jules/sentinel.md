@@ -5,3 +5,7 @@
 **Learning:** The application trusted the `examId` provided in the request body without cross-referencing it with the authenticated user's session. This pattern of "fetch object -> modify object" without "check ownership" is a common source of IDOR.
 
 **Prevention:** Always verify ownership before modifying resources. In this case, by fetching the exam and comparing `exam.username` with the session user's `username` (or `_id`). Additionally, fail securely (e.g., return 403 Forbidden) rather than just 500 or generic error.
+## 2024-05-24 - [Inconsistent Authorization Checks]
+**Vulnerability:** IDOR vulnerability in public exam route due to missing `!exam.public` and null checks for AYT and YDT exams.
+**Learning:** Inconsistent validation across switch branches handling different database models can lead to partial IDOR vulnerabilities and Unhandled TypeErrors.
+**Prevention:** Ensure consistent authorization and existence checks are applied across all branches of switch statements.
