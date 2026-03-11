@@ -15,15 +15,18 @@ const getExams = async function (username, chunk, _exam) {
         }
 
         const filter = { username: username };
-        exam_len = await Model.countDocuments(filter);
-
         let page = parseInt(chunk);
         if (isNaN(page) || page < 1) page = 1;
 
-        datas = await Model.find(filter)
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * 10)
-            .limit(10);
+        const [count, results] = await Promise.all([
+            Model.countDocuments(filter),
+            Model.find(filter)
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * 10)
+                .limit(10)
+        ]);
+        exam_len = count;
+        datas = results;
 
         return { datas, exam_len };
     } catch (err) {
